@@ -7,6 +7,12 @@ import matplotlib.pyplot as plt
 from datetime import datetime as dt
 from sqlalchemy import create_engine
 
+# set up parameters
+user = ''
+database = ''
+password = ''
+schema = ''
+table = ''
 
 
 # create sqlalchemy engine
