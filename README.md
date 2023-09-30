@@ -28,7 +28,6 @@ git clone https://github.com/your-username/financial-planner.git
 cd financial-planner
 ```
 
-
 #### Install Dependencies: 
 ``` 
 pip install -r requirements.txt 
@@ -39,10 +38,8 @@ pip install -r requirements.txt
 
 #### Run the Program:
 
-#### Interact with the Menu:
 - Follow the on-screen menu to enter income data, calculate total monthly income, export data, or exit the program.
 
-#### Example Interaction 
 ```
 Financial Planner Menu:
 1. Enter Income Data for the Current Month
