@@ -1,4 +1,5 @@
 # imports 
+import os
 import json
 import psycopg2
 import pandas as pd
@@ -8,11 +9,11 @@ from datetime import datetime as dt
 from sqlalchemy import create_engine
 
 # set up parameters
-user = ''
-database = ''
+user = 'postgres'
+database = 'finance'
 password = ''
 schema = ''
-table = ''
+table = 'finance_data'
 
 
 # create sqlalchemy engine
@@ -20,11 +21,21 @@ engine = create_engine(f"postgresql://{user}:{password}@localhost:5432/{database
 # set output directory
 dir = "data/financial_data.json"
 
+# create function to load existing data from json file
+def load_json_file():  
+    try:
+        with open(dir, 'r') as json_file:       
+            return json.load(json_file)
+    except FileNotFoundError:
+        return {"entries": []}
+    
+# create function to create or update json file with new entry
+def update_json_file(entry):
+    data = load_json_file()
+    data["entries"].append(entry)
+    with open(dir, 'w') as json_file:
+        json.dump(data, json_file, indent = 2)
 
-# creat function to save financial data to json file
-def save_data():
-    with open(dir, 'w') as file:
-        json.dump({}, file)
 
 try:
     # establish connection with database
@@ -53,6 +64,7 @@ def save_data_to_db(income, source):
     now = dt.now()
     year = now.strftime('%Y')
     month = now.strftime('%d-%m')
+    month_ii = now.strftime('%m-%d')
 
     insert_query = sql.SQL(f"""
         INSERT INTO {schema}.{table} (year, month, income, source)
@@ -67,18 +79,35 @@ def save_data_to_db(income, source):
             cursor.execute(insert_query, (year, month, income, source))
             # commit the changes
             conn.commit()
-
+        entry = {"date": f"{month_ii}-{year}", "income": income, "source": source}
+        update_json_file(entry)
     except psycopg2.Error as e:
-        print("Error inserting data: ", e)
+        print("Error inserting data to database: ", e)
+    except Exception as e:
+        print("Error: ", e)
+    finally:
+        if conn:
+            conn.close()
 
 
 # create function to input income data for the current month and year
 def create_income():
-    income = float(input('Enter the income amount: '))
-    source = input('Enter source: ')
+    income = None
+    source = None
+    while income is None:
+        try:
+            income = float(input('Enter the income amount: '))
+        except ValueError:
+            print("Invalid input. Please enter a valid income amount")
+    while source is None:
+        try:
+            income_source = input(str('Enter source: '))
+            if not all(character.isalpha() or character.isspace() for character in income_source):
+                raise ValueError("Invalid input. Please enter a valid income source (eg. Salary, Freelance, Gift, e.t.c.)")
+            source = income_source.title()
+        except ValueError:
+            print("Invalid income source. Please enter a valid income source (eg. Salary, Freelance, Gift, e.t.c.)")
 
-    # save data to json file
-    save_data()
 
     # save data to database
     save_data_to_db(income, source)
@@ -123,7 +152,7 @@ while True:
     print("\n Financial Planner Menu:")
     print("1. Enter Income Data for the Current Month")
     print("2. Calculate Monthly Total Income")
-    print("3. Save data to csv")
+    print("3. Save data to CSV")
     print("4. Exit")
 
     choice = input("Enter your choice (1/2/3/4): ")
@@ -148,7 +177,6 @@ while True:
         print(f"Data saved to {csv_filename}")
 
     elif choice == '4':
-        save_data()
         break
     else:
         print("Invalid choice. Please try again")
