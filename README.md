@@ -20,34 +20,28 @@ Robust error-handling mechanisms have been implemented to ensure program stabili
 The program seamlessly integrates with both a PostgreSQL database and a JSON file, ensuring comprehensive data storage and accessibility.
 
 ### Usage
-Clone the Repository:
+```
+- Clone the Repository:
 
-bash
-Copy code
-git clone https://github.com/your-username/financial-planner.git
+git clone https://github.com/your-username/financial-planner.git <br />
+
 cd financial-planner
-Install Dependencies:
 
-bash
-Copy code
-pip install -r requirements.txt
-Run the Program:
+- Install Dependencies: <br />
+pip install -r requirements.txt <br />
 
-bash
-Copy code
-python financial_planner.py
-Interact with the Menu:
+- Run the Program:<br />
+python app.py
 
+- Interact with the Menu:<br />
 Follow the on-screen menu to enter income data, calculate total monthly income, export data, or exit the program.
 
-`Example Interaction
-plaintext
-Copy code
+- Example Interaction <br />
 Financial Planner Menu:
 1. Enter Income Data for the Current Month
 2. Calculate Monthly Total Income
 3. Save data to CSV
-4. Exit`
+4. Exit
 
 Enter your choice (1/2/3/4): 1
 
@@ -55,3 +49,4 @@ Enter the income amount: 500.00
 Enter source: Gift
 
 Income data saved successfully.
+```
