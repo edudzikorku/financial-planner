@@ -23,7 +23,7 @@ The program seamlessly integrates with both a PostgreSQL database and a JSON fil
 #### Clone the Repository:
 
 ```
-git clone https://github.com/your-username/financial-planner.git 
+git clone https://github.com/edudzikorku/financial-planner.git
 
 cd financial-planner
 ```
