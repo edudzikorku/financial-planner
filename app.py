@@ -4,7 +4,6 @@ import json
 import psycopg2
 import pandas as pd
 from psycopg2 import  sql
-import matplotlib.pyplot as plt
 from datetime import datetime as dt
 from sqlalchemy import create_engine
 
