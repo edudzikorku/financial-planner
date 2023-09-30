@@ -3,4 +3,4 @@ Include/
 Lib/
 Scripts/
 share/
-pyvenv
+pyvenv.cfg
