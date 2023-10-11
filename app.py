@@ -10,8 +10,8 @@ from sqlalchemy import create_engine
 # set up parameters
 user = 'postgres'
 database = 'finance'
-password = ''
-schema = ''
+password = '0071005032'
+schema = 'finance_planner'
 table = 'finance_data'
 
 
