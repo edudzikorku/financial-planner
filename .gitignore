@@ -3,4 +3,6 @@ Include/
 Lib/
 Scripts/
 share/
-pyvenv.cfg
+pyvenv.cfg/
+credentials.py
+

@@ -1,0 +1,1 @@
+OUTPUT_DIR = "data/financial_data.json"

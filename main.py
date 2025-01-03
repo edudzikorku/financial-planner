@@ -139,9 +139,8 @@ def retrieve_data_as_dataframe(year, month):
     query = f"""
         SELECT *
         FROM {schema}.{table}
-        
+        WHERE year = %s AND month = %s
     """
-    # WHERE year = %s AND month = %s
     conn = engine.connect()
     df = pd.read_sql_query(query, conn, params = (year, month))
     return df

@@ -1,14 +1,4 @@
-######################################################################################
-#                                                                                    #
-# This is a simple program for recording income earned in every month                #
-# It records the amount earned as well as the source of the income                   #
-# The input from the user is then written to a PostgresSQL database                  #
-#                                                                                    #
-# Prepared by Edudzi (2023)                                                          #
-######################################################################################
-
 # imports 
-import config
 import os
 import json
 import psycopg2
@@ -16,13 +6,19 @@ import pandas as pd
 from psycopg2 import  sql
 from datetime import datetime as dt
 from sqlalchemy import create_engine
-from credentials import user, database, password, schema, table
+
+# set up parameters
+user = 'postgres'
+database = 'finance'
+password = '0071005032'
+schema = 'finance_planner'
+table = 'finance_data'
 
 
 # create sqlalchemy engine
 engine = create_engine(f"postgresql://{user}:{password}@localhost:5432/{database}")
 # set output directory
-dir = config.OUTPUT_DIR
+dir = "data/financial_data.json"
 
 # create function to load existing data from json file
 def load_json_file():  
@@ -139,9 +135,8 @@ def retrieve_data_as_dataframe(year, month):
     query = f"""
         SELECT *
         FROM {schema}.{table}
-        
+        WHERE year = %s AND month = %s
     """
-    # WHERE year = %s AND month = %s
     conn = engine.connect()
     df = pd.read_sql_query(query, conn, params = (year, month))
     return df
