@@ -13,7 +13,7 @@ import os
 import json
 import psycopg2
 import pandas as pd
-from psycopg2 import  sql
+from psycopg2 import sql
 from datetime import datetime as dt
 from sqlalchemy import create_engine
 from credentials import user, database, password, schema, table
@@ -24,7 +24,7 @@ engine = create_engine(f"postgresql://{user}:{password}@localhost:5432/{database
 # set output directory
 dir = config.OUTPUT_DIR
 
-# create function to load existing data from json file
+# Function to load existing data from json file
 def load_json_file():  
     try:
         with open(dir, 'r') as json_file:       
@@ -32,7 +32,7 @@ def load_json_file():
     except FileNotFoundError:
         return {"entries": []}
     
-# create function to create or update json file with new entry
+# Function to create or update json file with new entry
 def update_json_file(entry):
     data = load_json_file()
     data["entries"].append(entry)
@@ -62,7 +62,7 @@ except psycopg2.Error as e:
     print("Error creating table: ", e)
     
 
-#  create function to store financial data to database
+#  Function to store financial data to database
 def save_data_to_db(income, source):
     now = dt.now()
     year = now.strftime('%Y')
@@ -93,7 +93,7 @@ def save_data_to_db(income, source):
             conn.close()
 
 
-# create function to input income data for the current month and year
+# Function to input income data for the current month and year
 def create_income():
     income = None
     source = None
@@ -114,46 +114,76 @@ def create_income():
 
     # save data to database
     save_data_to_db(income, source)
-    print("Income data saved sussesfully.")
+    print("Income data saved successfully.")
 
-# create function to calculate the total income for the month
+# Function to calculate the total income for the month and show daily breakdown
 def total_income_per_month(year, month):
     # obtain full month name
     full_month_name = dt.strptime(month, '%d-%m').strftime('%B')
-    query = (f"""
-SELECT SUM(income) AS total_income 
-                    FROM {schema}.{table}
-                    WHERE year = %s AND month = %s
-""")
+    
+    # Query to get daily income breakdown
+    daily_query = sql.SQL(f"""
+        SELECT 
+            month AS date,
+            income,
+            source
+        FROM {schema}.{table}
+        WHERE year = %s AND month LIKE %s
+        ORDER BY month
+    """)
+    
+    # Query to get total income
+    total_query = sql.SQL(f"""
+        SELECT SUM(income) AS total_income 
+        FROM {schema}.{table}
+        WHERE year = %s AND month LIKE %s
+    """)
+    
     conn = psycopg2.connect(dbname = database, user = user, password = password)
     with conn.cursor() as cursor:
-        cursor.execute(query, (year, month))
+        # Get daily income
+        cursor.execute(daily_query, (year, f'%-{month.split("-")[1]}'))
+        daily_data = cursor.fetchall()
+        
+        # Get total income
+        cursor.execute(total_query, (year, f'%-{month.split("-")[1]}'))
         total = cursor.fetchone()[0]
+        
+        if daily_data:
+            print(f"\nDaily Income for {full_month_name}, {year}:")
+            print("-" * 40)
+            date = "Date"
+            amount = "Amount"
+            source = "Source"
+            print(f"{date:<15} {amount:<15} {source:<15}")
+            print("-" * 40)
+            for entry in daily_data:
+                date, amount, source = entry
+                print(f"{date:<15} GH₵{amount:<10.2f} {source:<15}")
+            print("-" * 40)
+        
         if total is not None:
             return total, full_month_name
         else:
             return 0, full_month_name
 
-# create function to retrieve data into pandas dataframe
+# Function to retrieve data into pandas dataframe
 def retrieve_data_as_dataframe(year, month):
     query = f"""
         SELECT *
-        FROM {schema}.{table}
-        
+        FROM {schema}.{table}        
     """
-    # WHERE year = %s AND month = %s
     conn = engine.connect()
-    df = pd.read_sql_query(query, conn, params = (year, month))
+    df = pd.read_sql_query(query, conn)
     return df
 
-# create function to save data as csv
-
+# Function to save data as csv
 def save_file(df, filename):
     df.to_csv(filename, index = False)
 
 # main loop to provide income details
 while True:
-    print("\n Financial Planner Menu:")
+    print("\nFinancial Planner Menu:")
     print("1. Enter Income Data for the Current Month")
     print("2. Calculate Monthly Total Income")
     print("3. Save data to CSV")
@@ -168,7 +198,7 @@ while True:
         year = now.strftime('%Y')
         month = now.strftime('%d-%m')
         total, full_month_name = total_income_per_month(year, month)
-        print(f"Total income for {full_month_name}, {year}: GH₵{total:.2f}")
+        print(f"\nTotal income for {full_month_name}, {year}: GH₵{total:.2f}")
 
     elif choice == '3':
         now = dt.now()

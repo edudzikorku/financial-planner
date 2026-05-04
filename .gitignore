@@ -5,4 +5,16 @@ Scripts/
 share/
 pyvenv.cfg/
 credentials.py
+app_old.py
+main.py
+.ipynb_checkpoints/
+__pycache__/
+.mypy_cache/
+.vscode/
+DSA/
+data/
+Include/
+Lib/
+Scripts/
+.git/
 

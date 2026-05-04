@@ -62,7 +62,7 @@ except psycopg2.Error as e:
     print("Error creating table: ", e)
     
 
-#  create function to store financial data to database
+#  Function to store financial data in database
 def save_data_to_db(income, source):
     now = dt.now()
     year = now.strftime('%Y')
@@ -93,7 +93,7 @@ def save_data_to_db(income, source):
             conn.close()
 
 
-# create function to input income data for the current month and year
+# Function to input income data for the current month and year
 def create_income():
     income = None
     source = None
@@ -116,7 +116,7 @@ def create_income():
     save_data_to_db(income, source)
     print("Income data saved sussesfully.")
 
-# create function to calculate the total income for the month
+# Function to calculate the total income for the month
 def total_income_per_month(year, month):
     # obtain full month name
     full_month_name = dt.strptime(month, '%d-%m').strftime('%B')
@@ -134,7 +134,7 @@ SELECT SUM(income) AS total_income
         else:
             return 0, full_month_name
 
-# create function to retrieve data into pandas dataframe
+# Function to retrieve data into pandas dataframe
 def retrieve_data_as_dataframe(year, month):
     query = f"""
         SELECT *
@@ -145,7 +145,7 @@ def retrieve_data_as_dataframe(year, month):
     df = pd.read_sql_query(query, conn, params = (year, month))
     return df
 
-# create function to save data as csv
+# Function to save data as csv
 
 def save_file(df, filename):
     df.to_csv(filename, index = False)
