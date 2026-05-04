@@ -1,7 +1,7 @@
 ## Financial Planner
 
 ### Overview
-The Financial Planner is a Python-based program designed to facilitate effective management of personal finances. It provides a simple and user-friendly interface to input income data, calculate total monthly income, and export data for further analysis. The program utilizes a PostgreSQL database for robust data storage and retrieval and includes a JSON file for additional data persistence.
+The Financial Planner is a Python-based program designed to facilitate effective management of personal finances. It provides a simple and user-friendly interface to input income data, calculate total monthly income, and export data for further analysis. The program utilises a PostgreSQL database for robust data storage and retrieval and includes a JSON file for additional data persistence.
 
 ### Features
 * Income Data Entry: <br />
